@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Наш Демонтаж — калькулятор</title>
+  <style>
+    /* ===== Глобальные стили ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #eef3f9;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      color: #1a2634;
+      padding: 12px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ===== Шапка бренда: логотип слева, название справа ===== */
+    .brand-header {
+      background: linear-gradient(135deg, #0a1e33 0%, #1b3a5c 100%);
+      border-radius: 24px 24px 0 0;
+      padding: 18px 24px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* ===== Логотип (изображение или иконка) слева ===== */
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: #ffd966;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: #0a1e33;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .logo-icon:hover {
+      transform: scale(1.05);
+    }
+
+    .logo-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .logo-img:hover {
+      transform: scale(1.05);
+    }
+
+    /* ===== Текст логотипа справа ===== */
+    .brand-left .logo {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: right;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .letter-n { color: #ffffff; }
+    .letter-a { color: #4a8fe0; }  /* яркий синий */
+    .letter-sh { color: #e74c3c; } /* красный */
+    .demontazh {
+      color: #ffd966;
+      margin-left: 4px;
+    }
+
+    /* ===== Карточка калькулятора ===== */
+    .calc-card {
+      background: white;
+      border-radius: 0 0 24px 24px;
+      padding: 24px 20px 30px;
+      box-shadow: 0 20px 40px -12px rgba(0,20,40,0.20);
+      margin-bottom: 30px;
+    }
+
+    /* ===== Блок "Стоимость демонтажа" ===== */
+    .cost-section {
+      background: #f4f9ff;
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      border-left: 5px solid #1b3a5c;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .cost-section .cost-text {
+      font-size: 15px;
+      color: #1f2a3a;
+      flex: 1;
+    }
+
+    .cost-section .cost-text strong {
+      color: #0a1e33;
+    }
+
+    .cost-section .cost-link {
+      background: #0a1e33;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cost-section .cost-link:hover {
+      background: #1b3a5c;
+      transform: scale(1.02);
+    }
+
+    @media (max-width: 600px) {
+      .cost-section {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 16px;
+      }
+      .cost-section .cost-link {
+        justify-content: center;
+      }
+    }
+
+    /* ===== Вкладки ===== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e9eef6;
+      padding-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #4a5a6e;
+      cursor: pointer;
+      border-radius: 30px 30px 0 0;
+      transition: 0.15s;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: #f0f5fe;
+    }
+
+    .tab-btn.active {
+      color: #0a1e33;
+      border-bottom-color: #1b3a5c;
+      background: #f0f5fe;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fade 0.25s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fade {
+      0% { opacity: 0.3; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Сетка полей ===== */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 20px;
+    }
+
+    @media (max-width: 700px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .brand-header { padding: 14px 16px; }
+      .brand-left .logo { font-size: 22px; }
+      .logo-icon, .logo-img { width: 40px; height: 40px; font-size: 22px; }
+      .calc-card { padding: 16px 12px 24px; }
+      .tab-btn { font-size: 13px; padding: 8px 12px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .brand-header { border-radius: 16px 16px 0 0; padding: 12px 14px; }
+      .brand-left .logo { font-size: 20px; }
+      .logo-icon, .logo-img { width: 36px; height: 36px; font-size: 18px; }
+      .calc-card { border-radius: 0 0 16px 16px; padding: 12px 10px 20px; }
+      .tab-btn { font-size: 12px; padding: 6px 10px; }
+      .btn-primary { width: 100%; justify-content: center; }
+      .flex-row { flex-direction: column; align-items: stretch; }
+      .result-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .result-item .value { font-size: 20px; }
+      .element-form { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .element-form .btn-add { grid-column: span 2; }
+      .checklist { grid-template-columns: 1fr; }
+      .material-table { display: block; overflow-x: auto; white-space: nowrap; }
+      .material-table th, .material-table td { padding: 6px 4px; font-size: 13px; }
+      .material-table .bar-cell { width: 80px; }
+      .module-tag { font-size: 12px; padding: 4px 10px; }
+      .footnote { font-size: 12px; padding: 12px 14px; }
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field-group label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2a3a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-group label small {
+      font-weight: 400;
+      color: #66788f;
+      font-size: 13px;
+    }
+
+    .field-group input,
+    .field-group select {
+      padding: 10px 12px;
+      border: 1.5px solid #dde3ed;
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+      transition: 0.15s;
+      width: 100%;
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: #1b3a5c;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(27,58,92,0.12);
+    }
+
+    .field-group .hint {
+      font-size: 13px;
+      color: #66788f;
+      margin-top: 2px;
+    }
+
+    .btn-primary {
+      background: #0a1e33;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover {
+      background: #1b3a5c;
+      transform: scale(1.02);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 20px;
+      margin-top: 16px;
+    }
+
+    /* ===== Результаты ===== */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 18px 0 10px;
+    }
+
+    .result-item {
+      background: #f8faff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid #e9eef6;
+    }
+
+    .result-item .label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #4a5a6e;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .result-item .value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #0b1a2b;
+    }
+
+    .result-item .value small {
+      font-size: 15px;
+      font-weight: 400;
+      color: #4a5a6e;
+      margin-left: 4px;
+    }
+
+    /* ===== Таблица материалов ===== */
+    .material-table {
+      margin-top: 18px;
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .material-table th {
+      text-align: left;
+      padding: 8px 6px 8px 0;
+      font-weight: 600;
+      color: #1f2a3a;
+      border-bottom: 2px solid #dde3ed;
+    }
+
+    .material-table td {
+      padding: 8px 6px 8px 0;
+      border-bottom: 1px solid #edf2f8;
+    }
+
+    .material-table tr:last-child td {
+      border-bottom: none;
+      font-weight: 600;
+    }
+
+    .material-table .bar-cell {
+      width: 100px;
+    }
+
+    .bar-bg {
+      background: #e9eef6;
+      border-radius: 20px;
+      height: 8px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #1b3a5c;
+      border-radius: 20px;
+      width: 0%;
+    }
+
+    /* ===== Блок дополнительных элементов ===== */
+    .element-list {
+      margin: 14px 0 10px;
+    }
+
+    .element-item {
+      background: #f8faff;
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid #e9eef6;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .element-item .info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      font-size: 14px;
+    }
+
+    .element-item .info strong {
+      color: #0a1e33;
+    }
+
+    .element-item .remove-btn {
+      background: none;
+      border: none;
+      color: #b0bcca;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.1s;
+      padding: 0 4px;
+    }
+
+    .element-item .remove-btn:hover {
+      color: #c0392b;
+    }
+
+    .element-form {
+      background: #f4f9ff;
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px dashed #b8cade;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px 16px;
+      align-items: end;
+    }
+
+    @media (max-width: 700px) {
+      .element-form {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+    }
+
+    .element-form .field-group {
+      gap: 2px;
+    }
+
+    .element-form .field-group label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .element-form .field-group input,
+    .element-form .field-group select {
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+
+    .element-form .btn-add {
+      background: #0a1e33;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .element-form .btn-add:hover {
+      background: #1b3a5c;
+    }
+
+    /* ===== Чек-лист ===== */
+    .checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 20px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .checklist { grid-template-columns: 1fr; }
+    }
+
+    .checklist label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+
+    .checklist input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #0a1e33;
+      flex-shrink: 0;
+    }
+
+    .footnote {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #4a5a6e;
+      background: #f8faff;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1px solid #e9eef6;
+    }
+
+    .module-tag {
+      background: #eef6ff;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mb-8 { margin-bottom: 8px; }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ======== ШАПКА БРЕНДА: ЛОГОТИП СЛЕВА, НАЗВАНИЕ СПРАВА ======== -->
+  <div class="brand-header">
+    <div class="brand-right">
+      <!-- =========================================================== -->
+      <!--  ВСТАВЬТЕ ВАШ ЛОГОТИП (JPG) ВМЕСТО ЭТОГО БЛОКА:              -->
+      <!--  ЗАМЕНИТЕ <div class="logo-icon">Н</div> НА:                 -->
+      <!--  <img src="ваш_логотип.jpg" alt="Логотип" class="logo-img" /> -->
+      <!--  ПРИ НЕОБХОДИМОСТИ ИЗМЕНИТЕ РАЗМЕРЫ В СТИЛЯХ (.logo-img)     -->
+      <!-- =========================================================== -->
+      <img src="logo.jpg" alt="Логотип" class="logo-img" />
+      <!-- =========================================================== -->
+    </div>
+    <div class="brand-left">
+      <div class="logo">
+        <span class="letter-n">Н</span>
+        <span class="letter-a">А</span>
+        <span class="letter-sh">Ш</span>
+        <span class="demontazh">Демонтаж</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== КАРТОЧКА КАЛЬКУЛЯТОРА ======== -->
+  <div class="calc-card">
+
+    <!-- ======== РАЗДЕЛ "СТОИМОСТЬ ДЕМОНТАЖА" ======== -->
+    <div class="cost-section">
+      <div class="cost-text">
+        <strong>💰 Стоимость демонтажа</strong> — итоговая цена зависит от объёма, типа здания, метода работ и региона. 
+        Для сверки с профессиональным калькулятором используйте <strong>calcal.ru</strong>.
+      </div>
+      <a href="https://calcal.ru/demolition-calculator" target="_blank" class="cost-link">
+        🔗 Открыть calcal.ru
+      </a>
+    </div>
+
+    <!-- Вкладки -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab1">🏢 Общий расчёт здания</button>
+      <button class="tab-btn" data-tab="tab2">🧱 Расчёт элемента</button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ВКЛАДКА 1 – ОБЩИЙ РАСЧЁТ ЗДАНИЯ -->
+    <!-- ============================================ -->
+    <div id="tab1" class="tab-content active">
+      <div class="grid-2col">
+        <div class="field-group">
+          <label> Длина здания (м) <small>наибольший размер</small></label>
+          <input type="number" id="length" value="0" step="0.5" min="1" />
+        </div>
+        <div class="field-group">
+          <label>Ширина здания(м)</label>
+          <input type="number" id="width" value="0" step="0.5" min="1" />
+        </div>
+        <div class="field-group">
+          <label>Высота здания (м) <small>до конька</small></label>
+          <input type="number" id="height" value="0" step="0.5" min="1" />
+        </div>
+        <div class="field-group">
+          <label>Тип здания</label>
+          <select id="buildingType">
+            <option value="panel">Панельный ж/б</option>
+            <option value="brick">Кирпичный</option>
+            <option value="monolith">Монолитный ж/б</option>
+            <option value="wood">Деревянный</option>
+            <option value="metal">Металлокаркас</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Метод демонтажа</label>
+          <select id="method">
+            <option value="manual">Ручной</option>
+            <option value="mech" selected>Механизированный</option>
+            <option value="explosion">Взрывной</option>
+            <option value="combined">Комбинированный</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Регион <small>коэффициент</small></label>
+          <select id="region">
+            <option value="1.0">Москва / МО</option>
+            <option value="0.85">Санкт-Петербург</option>
+            <option value="0.75">Регионы (до 1 млн)</option>
+            <option value="0.65">Отдалённые</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>👷 Количество рабочих <small>в бригаде</small></label>
+          <input type="number" id="workersCount" value="4" min="1" max="20" step="1" />
+          <div class="hint">Влияет на сроки выполнения</div>
+        </div>
+      </div>
+
+      <div class="flex-row">
+        <button class="btn-primary" id="calcMainBtn">▶ Рассчитать здание</button>
+        <span style="font-size:14px; color:#4a5a6e;">Коэф. разрыхления 1.12 учтён</span>
+      </div>
+
+      <!-- Результаты по зданию -->
+      <div id="mainResults">
+        <div class="result-grid" id="mainResultGrid">
+          <div class="result-item"><div class="label">Конструктивный объём</div><div class="value" id="mainVolume">0 <small>м³</small></div></div>
+          <div class="result-item"><div class="label">Общая масса</div><div class="value" id="mainMass">0 <small>т</small></div></div>
+          <div class="result-item"><div class="label">Габаритный объём</div><div class="value" id="mainGross">0 <small>м³</small></div></div>
+          <div class="result-item"><div class="label">Стоимость работ</div><div class="value" id="mainCost">0 <small>₽</small></div></div>
+          <div class="result-item"><div class="label">Срок (дней)</div><div class="value" id="mainDays">0 <small>дн.</small></div></div>
+          <div class="result-item"><div class="label">Рейсов самосвала</div><div class="value" id="mainTrips">0 <small>шт.</small></div></div>
+        </div>
+
+        <h3 style="margin: 24px 0 6px; font-size:17px;">🧱 Разбивка по материалам</h3>
+        <table class="material-table">
+          <thead><tr><th>Материал</th><th>Объём, м³</th><th>Плотность, т/м³</th><th>Масса, т</th><th>Доля, %</th><th class="bar-cell"></th></tr></thead>
+          <tbody id="mainMaterialBody"></tbody>
+        </table>
+
+        <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px;">
+          <span class="module-tag">🔧 Техника: <span id="mainTech">—</span></span>
+          <span class="module-tag">🚛 Вывоз: <span id="mainHaul">—</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ВКЛАДКА 2 – РАСЧЁТ ЭЛЕМЕНТА -->
+    <!-- ============================================ -->
+    <div id="tab2" class="tab-content">
+      <p style="margin-bottom:14px; color:#4a5a6e; font-size:15px;">Добавляйте отдельные конструкции (пол, стена, перекрытие и др.) для детальной сметы. Результаты суммируются.</p>
+
+      <!-- Форма добавления элемента -->
+      <div class="element-form" id="elementForm">
+        <div class="field-group">
+          <label>Тип элемента</label>
+          <select id="elemType">
+            <option value="floor">Пол</option>
+            <option value="wall">Стена</option>
+            <option value="ceiling">Перекрытие</option>
+            <option value="foundation">Фундамент</option>
+            <option value="roof">Крыша</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Длина (м)</label>
+          <input type="number" id="elemLength" value="10" step="0.1" min="0.1" />
+        </div>
+        <div class="field-group">
+          <label>Ширина (м)</label>
+          <input type="number" id="elemWidth" value="5" step="0.1" min="0.1" />
+        </div>
+        <div class="field-group">
+          <label>Толщина / высота (м)</label>
+          <input type="number" id="elemHeight" value="0.2" step="0.01" min="0.01" />
+        </div>
+        <div class="field-group">
+          <label>Материал</label>
+          <select id="elemMaterial">
+            <option value="concrete">Бетон (2.4 т/м³)</option>
+            <option value="brick">Кирпич (1.8 т/м³)</option>
+            <option value="wood">Древесина (0.6 т/м³)</option>
+            <option value="metal">Сталь (7.85 т/м³)</option>
+            <option value="mixed">Смешанный (1.5 т/м³)</option>
+          </select>
+        </div>
+        <button class="btn-add" id="addElemBtn">➕ Добавить</button>
+      </div>
+
+      <!-- Список добавленных элементов -->
+      <div id="elementList" class="element-list"></div>
+
+      <!-- Итоги по элементам -->
+      <div id="elemSummary" style="margin-top:16px;">
+        <div class="result-grid" id="elemResultGrid">
+          <div class="result-item"><div class="label">Всего объём</div><div class="value" id="elemTotalVolume">0 <small>м³</small></div></div>
+          <div class="result-item"><div class="label">Всего масса</div><div class="value" id="elemTotalMass">0 <small>т</small></div></div>
+          <div class="result-item"><div class="label">Стоимость работ</div><div class="value" id="elemTotalCost">0 <small>₽</small></div></div>
+          <div class="result-item"><div class="label">Рейсов самосвала</div><div class="value" id="elemTotalTrips">0 <small>шт.</small></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ОБЩИЙ ИТОГ (суммарный по обеим вкладкам) -->
+    <!-- ============================================ -->
+    <div style="margin-top:24px; padding-top:18px; border-top:3px solid #dde3ed;">
+      <h3 style="font-size:18px;">💰 Общая смета (здание + элементы)</h3>
+      <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr));">
+        <div class="result-item"><div class="label">Всего объём</div><div class="value" id="totalAllVolume">0 <small>м³</small></div></div>
+        <div class="result-item"><div class="label">Всего масса</div><div class="value" id="totalAllMass">0 <small>т</small></div></div>
+        <div class="result-item"><div class="label">Общая стоимость</div><div class="value" id="totalAllCost">0 <small>₽</small></div></div>
+        <div class="result-item"><div class="label">Рейсов самосвала</div><div class="value" id="totalAllTrips">0 <small>шт.</small></div></div>
+      </div>
+    </div>
+
+    <!-- ======== ЧЕК-ЛИСТ ======== -->
+    <h3 style="margin: 24px 0 8px; font-size:17px;">📋 Чек-лист документации (ГрК РФ, ПП 509)</h3>
+    <div class="checklist">
+      <label><input type="checkbox" checked /> Проект организации работ по сносу (ППР)</label>
+      <label><input type="checkbox" checked /> Техническое обследование конструкций</label>
+      <label><input type="checkbox" checked /> Уведомление в администрацию (ст. 55.31)</label>
+      <label><input type="checkbox" /> Акт отключения инженерных сетей</label>
+      <label><input type="checkbox" /> Паспорта отходов I–IV классов (89-ФЗ)</label>
+      <label><input type="checkbox" /> Договор с лицензированным оператором</label>
+      <label><input type="checkbox" /> ОВОС (для объектов вблизи жилой застройки)</label>
+      <label><input type="checkbox" /> Акт о завершении сноса (218-ФЗ)</label>
+    </div>
+
+    <div class="footnote">
+      <strong>⚡ Справочный инструмент — не заменяет эксперта.</strong> Расчёт выполнен по конструктивным коэффициентам. Фактические объёмы могут отличаться на 10–15% в зависимости от состояния конструкций. Коэффициент разрыхления 1.12 учтён автоматически.
+    </div>
+
+  </div> <!-- /calc-card -->
+
+</div> <!-- /container -->
+
+<script>
+  (function() {
+    "use strict";
+
+    // ========== ДАННЫЕ ПО МАТЕРИАЛАМ ДЛЯ ЗДАНИЙ ==========
+    const BUILDING_MATERIALS = {
+      panel: {
+        label: 'Панельный ж/б',
+        fractions: [
+          { name: 'Бетон / железобетон', density: 2.40, share: 0.65 },
+          { name: 'Кирпич / керамика', density: 1.80, share: 0.10 },
+          { name: 'Древесина', density: 0.60, share: 0.05 },
+          { name: 'Металлокаркас / сталь', density: 7.85, share: 0.08 },
+          { name: 'Прочие', density: 1.20, share: 0.12 }
+        ]
+      },
+      brick: {
+        label: 'Кирпичный',
+        fractions: [
+          { name: 'Кирпич / керамика', density: 1.80, share: 0.55 },
+          { name: 'Бетон / железобетон', density: 2.40, share: 0.20 },
+          { name: 'Древесина', density: 0.60, share: 0.08 },
+          { name: 'Металлокаркас / сталь', density: 7.85, share: 0.07 },
+          { name: 'Прочие', density: 1.20, share: 0.10 }
+        ]
+      },
+      monolith: {
+        label: 'Монолитный ж/б',
+        fractions: [
+          { name: 'Бетон / железобетон', density: 2.40, share: 0.72 },
+          { name: 'Металлокаркас / сталь', density: 7.85, share: 0.10 },
+          { name: 'Кирпич / керамика', density: 1.80, share: 0.06 },
+          { name: 'Древесина', density: 0.60, share: 0.04 },
+          { name: 'Прочие', density: 1.20, share: 0.08 }
+        ]
+      },
+      wood: {
+        label: 'Деревянный',
+        fractions: [
+          { name: 'Древесина', density: 0.60, share: 0.60 },
+          { name: 'Бетон / железобетон', density: 2.40, share: 0.12 },
+          { name: 'Кирпич / керамика', density: 1.80, share: 0.08 },
+          { name: 'Металлокаркас / сталь', density: 7.85, share: 0.05 },
+          { name: 'Прочие', density: 1.20, share: 0.15 }
+        ]
+      },
+      metal: {
+        label: 'Металлокаркас',
+        fractions: [
+          { name: 'Металлокаркас / сталь', density: 7.85, share: 0.55 },
+          { name: 'Бетон / железобетон', density: 2.40, share: 0.15 },
+          { name: 'Кирпич / керамика', density: 1.80, share: 0.08 },
+          { name: 'Древесина', density: 0.60, share: 0.05 },
+          { name: 'Прочие', density: 1.20, share: 0.17 }
+        ]
+      }
+    };
+
+    // ========== БАЗОВЫЕ ЦЕНЫ (за м³) ==========
+    const BASE_PRICES = {
+      manual: 5500,
+      mech: 2800,
+      explosion: 1400,
+      combined: 3500
+    };
+
+    const DENSITY_MAP = {
+      concrete: 2.4,
+      brick: 1.8,
+      wood: 0.6,
+      metal: 7.85,
+      mixed: 1.5
+    };
+
+    // ========== СОСТОЯНИЕ ==========
+    let elements = [];
+
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function getTechAndDays(method, volume, workers) {
+      const baseDaysPer100 = { manual: 4.0, mech: 1.8, explosion: 0.8, combined: 2.4 };
+      const days = Math.max(1, Math.round((volume / 100) * (baseDaysPer100[method] || 2.0) / (workers / 4)));
+      const tech = { manual: 'кувалды, перфораторы', mech: 'экскаватор-разрушитель, гидроножницы', explosion: 'контролируемое обрушение', combined: 'ручной + механизированный' };
+      return { tech: tech[method] || 'механизированный', days: days };
+    }
+
+    // ========== РАСЧЁТ ЗДАНИЯ ==========
+    function calculateBuilding() {
+      const length = parseFloat(document.getElementById('length').value) || 0;
+      const width = parseFloat(document.getElementById('width').value) || 0;
+      const height = parseFloat(document.getElementById('height').value) || 0;
+      const typeKey = document.getElementById('buildingType').value;
+      const method = document.getElementById('method').value;
+      const region = parseFloat(document.getElementById('region').value) || 1.0;
+      const workers = parseInt(document.getElementById('workersCount').value) || 4;
+
+      const grossVolume = length * width * height;
+      const constrVolume = grossVolume * 0.70;
+
+      const matData = BUILDING_MATERIALS[typeKey];
+      if (!matData) return null;
+
+      const fractions = matData.fractions;
+      const totalShare = fractions.reduce((s, f) => s + f.share, 0);
+      const materials = fractions.map(f => {
+        const vol = constrVolume * (f.share / totalShare);
+        const mass = vol * f.density;
+        return { name: f.name, volume: vol, density: f.density, mass: mass, sharePercent: (f.share / totalShare) * 100 };
+      });
+
+      const totalVolume = materials.reduce((s, m) => s + m.volume, 0);
+      const totalMass = materials.reduce((s, m) => s + m.mass, 0);
+
+      let complexity = 1.0;
+      if (typeKey === 'panel' || typeKey === 'monolith') complexity = 1.15;
+      if (typeKey === 'metal') complexity = 1.30;
+      const cost = totalVolume * (BASE_PRICES[method] || 2800) * complexity * region;
+
+      const techInfo = getTechAndDays(method, totalVolume, workers);
+      const days = techInfo.days;
+      const looseMass = totalMass * 1.12;
+      const trips = Math.ceil(looseMass / 25);
+
+      return { grossVolume, constrVolume, totalVolume, totalMass, cost, days, trips, materials, tech: techInfo.tech, workers };
+    }
+
+    function renderBuilding(result) {
+      if (!result) {
+        document.getElementById('mainVolume').innerHTML = '0 <small>м³</small>';
+        document.getElementById('mainMass').innerHTML = '0 <small>т</small>';
+        document.getElementById('mainGross').innerHTML = '0 <small>м³</small>';
+        document.getElementById('mainCost').innerHTML = '0 <small>₽</small>';
+        document.getElementById('mainDays').innerHTML = '0 <small>дн.</small>';
+        document.getElementById('mainTrips').innerHTML = '0 <small>шт.</small>';
+        document.getElementById('mainMaterialBody').innerHTML = '';
+        document.getElementById('mainTech').textContent = '—';
+        document.getElementById('mainHaul').textContent = '—';
+        return;
+      }
+
+      document.getElementById('mainVolume').innerHTML = `${result.totalVolume.toFixed(1)} <small>м³</small>`;
+      document.getElementById('mainMass').innerHTML = `${result.totalMass.toFixed(1)} <small>т</small>`;
+      document.getElementById('mainGross').innerHTML = `${result.grossVolume.toFixed(0)} <small>м³</small>`;
+      document.getElementById('mainCost').innerHTML = `${Math.round(result.cost).toLocaleString()} <small>₽</small>`;
+      document.getElementById('mainDays').innerHTML = `${result.days} <small>дн.</small>`;
+      document.getElementById('mainTrips').innerHTML = `${result.trips} <small>шт.</small>`;
+
+      const tbody = document.getElementById('mainMaterialBody');
+      tbody.innerHTML = '';
+      let maxMass = Math.max(...result.materials.map(m => m.mass), 1);
+      result.materials.forEach(m => {
+        const tr = document.createElement('tr');
+        const pct = (m.mass / maxMass * 100);
+        tr.innerHTML = `
+          <td><strong>${m.name}</strong></td>
+          <td>${m.volume.toFixed(1)}</td>
+          <td>${m.density.toFixed(2)}</td>
+          <td>${m.mass.toFixed(1)}</td>
+          <td>${m.sharePercent.toFixed(1)}%</td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(pct, 100)}%;"></div></div></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      const trTotal = document.createElement('tr');
+      trTotal.innerHTML = `<td><strong>Итого</strong></td><td><strong>${result.totalVolume.toFixed(1)}</strong></td><td>—</td><td><strong>${result.totalMass.toFixed(1)}</strong></td><td>100%</td><td class="bar-cell"></td>`;
+      tbody.appendChild(trTotal);
+
+      document.getElementById('mainTech').textContent = result.tech;
+      document.getElementById('mainHaul').textContent = `самосвал 25 т (${result.trips} рейсов)`;
+    }
+
+    // ========== РАСЧЁТ ЭЛЕМЕНТА ==========
+    function calculateElement(type, length, width, height, materialKey) {
+      const volume = length * width * height;
+      const density = DENSITY_MAP[materialKey] || 1.5;
+      const mass = volume * density;
+      const cost = volume * 3000 * 1.0;
+      return { volume, mass, cost };
+    }
+
+    function addElement() {
+      const type = document.getElementById('elemType').value;
+      const length = parseFloat(document.getElementById('elemLength').value) || 0;
+      const width = parseFloat(document.getElementById('elemWidth').value) || 0;
+      const height = parseFloat(document.getElementById('elemHeight').value) || 0;
+      const material = document.getElementById('elemMaterial').value;
+
+      if (length <= 0 || width <= 0 || height <= 0) {
+        alert('Введите положительные размеры элемента.');
+        return;
+      }
+
+      const result = calculateElement(type, length, width, height, material);
+      elements.push({
+        type, length, width, height, material,
+        volume: result.volume,
+        mass: result.mass,
+        cost: result.cost
+      });
+      renderElements();
+      updateElemSummary();
+      updateTotalAll();
+    }
+
+    function removeElement(index) {
+      elements.splice(index, 1);
+      renderElements();
+      updateElemSummary();
+      updateTotalAll();
+    }
+
+    function renderElements() {
+      const container = document.getElementById('elementList');
+      if (elements.length === 0) {
+        container.innerHTML = '<p style="color:#8899aa;">Пока нет добавленных элементов. Добавьте первый выше.</p>';
+        return;
+      }
+      let html = '';
+      elements.forEach((el, i) => {
+        const typeNames = { floor:'Пол', wall:'Стена', ceiling:'Перекрытие', foundation:'Фундамент', roof:'Крыша' };
+        const matNames = { concrete:'Бетон', brick:'Кирпич', wood:'Древесина', metal:'Сталь', mixed:'Смешанный' };
+        html += `
+          <div class="element-item">
+            <div class="info">
+              <span><strong>${typeNames[el.type] || el.type}</strong></span>
+              <span>${el.length}×${el.width}×${el.height} м</span>
+              <span>${matNames[el.material] || el.material}</span>
+              <span>Объём: ${el.volume.toFixed(2)} м³</span>
+              <span>Масса: ${el.mass.toFixed(1)} т</span>
+              <span>Стоимость: ${Math.round(el.cost).toLocaleString()} ₽</span>
+            </div>
+            <button class="remove-btn" data-index="${i}">✕</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      container.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const idx = parseInt(this.dataset.index);
+          removeElement(idx);
+        });
+      });
+    }
+
+    function updateElemSummary() {
+      const totalVolume = elements.reduce((s, e) => s + e.volume, 0);
+      const totalMass = elements.reduce((s, e) => s + e.mass, 0);
+      const totalCost = elements.reduce((s, e) => s + e.cost, 0);
+      const trips = Math.ceil(totalMass * 1.12 / 25);
+
+      document.getElementById('elemTotalVolume').innerHTML = `${totalVolume.toFixed(1)} <small>м³</small>`;
+      document.getElementById('elemTotalMass').innerHTML = `${totalMass.toFixed(1)} <small>т</small>`;
+      document.getElementById('elemTotalCost').innerHTML = `${Math.round(totalCost).toLocaleString()} <small>₽</small>`;
+      document.getElementById('elemTotalTrips').innerHTML = `${trips} <small>шт.</small>`;
+    }
+
+    // ========== ОБЩИЙ ИТОГ ==========
+    function updateTotalAll() {
+      const building = calculateBuilding();
+      let bVol = 0, bMass = 0, bCost = 0, bTrips = 0;
+      if (building) {
+        bVol = building.totalVolume;
+        bMass = building.totalMass;
+        bCost = building.cost;
+        bTrips = building.trips;
+      }
+      const eVol = elements.reduce((s, e) => s + e.volume, 0);
+      const eMass = elements.reduce((s, e) => s + e.mass, 0);
+      const eCost = elements.reduce((s, e) => s + e.cost, 0);
+      const eTrips = Math.ceil(eMass * 1.12 / 25);
+
+      const totalVol = bVol + eVol;
+      const totalMass = bMass + eMass;
+      const totalCost = bCost + eCost;
+      const totalTrips = Math.ceil((bMass + eMass) * 1.12 / 25);
+
+      document.getElementById('totalAllVolume').innerHTML = `${totalVol.toFixed(1)} <small>м³</small>`;
+      document.getElementById('totalAllMass').innerHTML = `${totalMass.toFixed(1)} <small>т</small>`;
+      document.getElementById('totalAllCost').innerHTML = `${Math.round(totalCost).toLocaleString()} <small>₽</small>`;
+      document.getElementById('totalAllTrips').innerHTML = `${totalTrips} <small>шт.</small>`;
+    }
+
+    // ========== ОБНОВЛЕНИЕ ВСЕГО ==========
+    function refreshAll() {
+      const building = calculateBuilding();
+      renderBuilding(building);
+      updateElemSummary();
+      updateTotalAll();
+    }
+
+    // ========== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ==========
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ========== ПРИВЯЗКА СОБЫТИЙ ==========
+    document.getElementById('calcMainBtn').addEventListener('click', refreshAll);
+    document.getElementById('addElemBtn').addEventListener('click', addElement);
+
+    ['length','width','height','buildingType','method','region','workersCount'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', refreshAll);
+    });
+
+    window.addEventListener('DOMContentLoaded', refreshAll);
+  })();
+</script>
+
+</body>
+</html>
