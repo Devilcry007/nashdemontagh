@@ -599,6 +599,40 @@
       color: #0a1e33;
     }
 
+    /* ===== Стили для четвёртой вкладки (Прайс-лист) ===== */
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .price-table th {
+      text-align: left;
+      padding: 10px 8px 10px 0;
+      font-weight: 600;
+      color: #1f2a3a;
+      border-bottom: 2px solid #1b3a5c;
+    }
+
+    .price-table td {
+      padding: 10px 8px 10px 0;
+      border-bottom: 1px solid #edf2f8;
+    }
+
+    .price-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .price-table tr:nth-child(even) {
+      background: #f8faff;
+    }
+
+    .price-table .price {
+      font-weight: 600;
+      color: #0a1e33;
+    }
+
     /* ===== Чек-лист ===== */
     .checklist {
       display: grid;
@@ -697,6 +731,7 @@
       <button class="tab-btn active" data-tab="tab1">🏢 Общий расчёт здания</button>
       <button class="tab-btn" data-tab="tab2">🧱 Расчёт элемента</button>
       <button class="tab-btn" data-tab="tab3">🧾 Смета по видам работ</button>
+      <button class="tab-btn" data-tab="tab4">📋 Прайс-лист</button>
     </div>
 
     <!-- ============================================ -->
@@ -896,6 +931,29 @@
     </div>
 
     <!-- ============================================ -->
+    <!-- ВКЛАДКА 4 – ПРАЙС-ЛИСТ -->
+    <!-- ============================================ -->
+    <div id="tab4" class="tab-content">
+      <h3 style="margin-bottom:12px; font-size:18px;">📋 Прайс-лист на услуги демонтажа</h3>
+      <p style="color:#4a5a6e; margin-bottom:16px; font-size:15px;">
+        Актуальные цены на основные виды демонтажных работ. Стоимость указана за единицу измерения.
+      </p>
+
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>Вид работ</th>
+            <th>Ед. изм.</th>
+            <th>Стоимость, ₽</th>
+          </tr>
+        </thead>
+        <tbody id="priceBody">
+          <!-- заполняется JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============================================ -->
     <!-- ОБЩИЙ ИТОГ (суммарный по всем вкладкам) -->
     <!-- ============================================ -->
     <div style="margin-top:24px; padding-top:18px; border-top:3px solid #dde3ed;">
@@ -1003,7 +1061,7 @@
       mixed: 1.5
     };
 
-    // ========== РАСЦЕНКИ ДЛЯ ТРЕТЬЕЙ ВКЛАДКИ ==========
+    // ========== РАСЦЕНКИ ДЛЯ ТРЕТЬЕЙ И ЧЕТВЁРТОЙ ВКЛАДОК ==========
     const WORK_PRICES = {
       wall_brick:   { name: 'Демонтаж кирпичных стен', unit: 'м³', price: 1800 },
       wall_concrete: { name: 'Демонтаж бетонных стен', unit: 'м³', price: 2200 },
@@ -1277,6 +1335,22 @@
       });
     }
 
+    // ========== ФУНКЦИЯ ДЛЯ ЧЕТВЁРТОЙ ВКЛАДКИ (Прайс-лист) ==========
+    function renderPriceList() {
+      const tbody = document.getElementById('priceBody');
+      let html = '';
+      for (const [key, item] of Object.entries(WORK_PRICES)) {
+        html += `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.unit}</td>
+            <td class="price">${item.price.toLocaleString()} ₽</td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = html;
+    }
+
     // ========== ОБЩИЙ ИТОГ (суммарный по всем вкладкам) ==========
     function updateTotalAll() {
       const building = calculateBuilding();
@@ -1341,6 +1415,7 @@
     window.addEventListener('DOMContentLoaded', function() {
       updateWorkUnit();
       renderEstimate();
+      renderPriceList();
       refreshAll();
     });
 
